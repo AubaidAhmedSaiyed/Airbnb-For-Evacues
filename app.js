@@ -17,17 +17,13 @@ const errorHandler = require('./middleware/errorHandler');
 
 const MONGO_URL = process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/Sheltr';
 
-async function main() {
-  await mongoose.connect(MONGO_URL);
-}
-
-main()
-  .then(() => {
-    console.log('MongoDB connected');
-  })
-  .catch((err) => {
-    console.error('MongoDB connection error', err);
+const connectMongo = async () => {
+  // Add explicit timeouts so Vercel doesn't keep requests hanging forever.
+  await mongoose.connect(MONGO_URL, {
+    serverSelectionTimeoutMS: 8000,
+    connectTimeoutMS: 8000
   });
+};
 
 app.use(express.static('public'));
 app.use(express.json());
@@ -36,6 +32,14 @@ app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(methodOverride('_method'));
+
+// Avoid long hangs when Mongo isn't ready (common during Vercel cold starts).
+app.use('/api', (req, res, next) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ message: 'Database not ready. Please retry in a moment.' });
+  }
+  next();
+});
 
 app.use('/api/auth', apiAuth);
 app.use('/api/listings', apiListings);
@@ -56,6 +60,18 @@ app.get('/signup', (req, res) => res.render('signup'));
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
-});
+
+async function startServer() {
+  try {
+    await connectMongo();
+    console.log('MongoDB connected');
+    app.listen(PORT, () => {
+      console.log(`Server is listening on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error('MongoDB connection error', err);
+    process.exit(1);
+  }
+}
+
+startServer();

@@ -3,6 +3,7 @@ const router = express.Router();
 const Listing = require('../models/listing');
 const Booking = require('../models/booking');
 const User = require('../models/user');
+const { authenticaton, authorizeRoles } = require('../middleware/auth');
 
 const DEFAULT_HOST_EMAIL = 'host@example.com';
 
@@ -10,6 +11,10 @@ const findHost = async (req) => {
   if (req.user) return req.user;
   return User.findOne({ email: DEFAULT_HOST_EMAIL });
 };
+
+// Only authenticated hosts can access host pages.
+router.use(authenticaton);
+router.use(authorizeRoles('host'));
 
 // volunteer dashboard
 router.get('/', async (req, res, next) => {

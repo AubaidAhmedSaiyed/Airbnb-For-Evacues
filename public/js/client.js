@@ -79,6 +79,13 @@ window.Sheltr.applyNavAuthState = async function applyNavAuthState() {
   try {
     const me = await window.Sheltr.apiFetch('/api/users/me');
     whoEl.textContent = `${me.name} • ${me.role}`;
+
+    // Role-gated nav links (host vs guest)
+    const roleEls = document.querySelectorAll('[data-role]');
+    roleEls.forEach(el => {
+      const role = el.getAttribute('data-role');
+      el.style.display = me.role === role ? '' : 'none';
+    });
   } catch {
     whoEl.textContent = 'Session expired';
   }

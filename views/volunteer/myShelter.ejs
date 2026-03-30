@@ -3,18 +3,37 @@
   <div class="container">
     <h2>My Shelters</h2>
     <% if (!listings || listings.length === 0) { %>
-      <p>No shelters found.</p>
+      <p class="muted">No shelters found.</p>
     <% } else { %>
-      <ul>
+      <div class="card-shelter">
         <% listings.forEach(listing => { %>
-          <li>
-            <h3><%= listing.title %></h3>
-            <p><strong>Location:</strong> <%= listing.location.address %>, <%= listing.location.country %></p>
-            <p><strong>Capacity:</strong> <%= listing.capacity %></p>
-            <p><strong>Availability:</strong> <%= listing.availableFrom ? listing.availableFrom.toISOString().slice(0,10) : '-' %> to <%= listing.availableUntil ? listing.availableUntil.toISOString().slice(0,10) : '-' %></p>
-          </li>
+          <div class="card">
+            <% const img = (listing.images && listing.images.length) ? listing.images[0] : null; %>
+            <% if (img) { %>
+              <img src="<%= img %>" class="card-img-top" alt="Shelter image" />
+            <% } %>
+            <div class="card-body">
+              <h4 class="card-title"><%= listing.title %></h4>
+              <p class="card-text">
+                <strong>Location:</strong> <%= listing.location.address %>, <%= listing.location.country %><br/>
+                <strong>Capacity:</strong> <%= listing.capacity %><br/>
+                <strong>Availability:</strong>
+                  <%= listing.availableFrom ? listing.availableFrom.toISOString().slice(0,10) : '-' %>
+                  to
+                  <%= listing.availableUntil ? listing.availableUntil.toISOString().slice(0,10) : '-' %>
+              </p>
+
+              <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;">
+                <a href="/volunteer/myShelter/<%= listing._id %>/edit"><button type="button">Edit</button></a>
+                <a href="/evacuee/shelters/<%= listing._id %>"><button type="button" style="background:rgba(46,125,50,.25); color:var(--brand); border:1px solid rgba(46,125,50,.35);">View</button></a>
+                <form action="/volunteer/myShelter/<%= listing._id %>/delete" method="POST" onsubmit="return confirm('Delete this shelter?');">
+                  <button type="submit" style="background:#7d2e2e;">Delete</button>
+                </form>
+              </div>
+            </div>
+          </div>
         <% }) %>
-      </ul>
+      </div>
     <% } %>
   </div>
 </body>

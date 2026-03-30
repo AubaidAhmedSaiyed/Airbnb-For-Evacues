@@ -89,3 +89,13 @@ Open:
 4. Guest refreshes and sees booking status + notifications
 5. Guest can also open “My Bookings” page to track everything
 
+---
+
+## Deploying on Vercel (important)
+
+This app needs a working MongoDB connection in the Vercel environment.
+
+1. Set `MONGO_URL` in Vercel to a reachable MongoDB host (MongoDB Atlas recommended). `127.0.0.1` will not work on Vercel.
+2. Set `JWT_SECRET` in Vercel to any random string.
+3. If pages that load data (shelters, booking, dashboards) timeout, it usually means MongoDB is unreachable or still warming up.
+
