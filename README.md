@@ -49,6 +49,7 @@ Open:
 - **Login**: `http://localhost:8080/login`
 - **Signup**: `http://localhost:8080/signup`
 - **Shelters browse**: `http://localhost:8080/evacuee/shelters`
+- **My bookings (guest)**: `http://localhost:8080/evacuee/bookings`
 
 ---
 
@@ -86,4 +87,5 @@ Open:
 2. Signup as **Guest**, browse shelters, open one, request booking
 3. Signup as **Host**, open host dashboard, approve booking
 4. Guest refreshes and sees booking status + notifications
+5. Guest can also open “My Bookings” page to track everything
 

@@ -1,0 +1,83 @@
+<% layout("/layouts/boilerplate") %>
+<body>
+  <div class="row">
+    <div>
+      <h2>My Bookings</h2>
+      <p class="muted">Track your requests and approval status in real time.</p>
+    </div>
+    <div class="panel" style="min-width: 280px;">
+      <div><strong>Unread notifications</strong></div>
+      <div id="guest-notifications" class="muted">Loading...</div>
+      <div style="margin-top:10px;">
+        <button id="mark-all-read" type="button">Mark all read</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" style="margin-top: 14px;">
+    <div class="row">
+      <h3 style="margin:0;">Bookings</h3>
+      <a href="/evacuee/shelters"><button type="button">Browse Shelters</button></a>
+    </div>
+    <div id="bookings-list" class="muted" style="margin-top: 10px;">Loading...</div>
+  </div>
+
+  <script>
+    (function () {
+      const bookingsEl = document.getElementById('bookings-list');
+      const notifsEl = document.getElementById('guest-notifications');
+      const markAllBtn = document.getElementById('mark-all-read');
+
+      async function loadBookings() {
+        try {
+          const items = await window.Sheltr.apiFetch('/api/bookings');
+          if (!items.length) {
+            bookingsEl.textContent = 'No bookings yet.';
+            return;
+          }
+          bookingsEl.innerHTML = '<ul>' + items.map(b => {
+            const title = b.listing && b.listing.title ? b.listing.title : 'Listing';
+            const loc = b.listing && b.listing.location ? `${b.listing.location.address}, ${b.listing.location.country}` : '';
+            const sd = b.startDate ? new Date(b.startDate).toISOString().slice(0,10) : '-';
+            const ed = b.endDate ? new Date(b.endDate).toISOString().slice(0,10) : '-';
+            return `<li>
+              <strong>${title}</strong> <span class="muted">${loc ? '— ' + loc : ''}</span><br/>
+              <span class="muted">${sd} → ${ed} • guests: ${b.guestsCount} • status: <strong>${b.status}</strong></span>
+            </li>`;
+          }).join('') + '</ul>';
+        } catch (e) {
+          bookingsEl.textContent = 'Please login to view your bookings.';
+        }
+      }
+
+      async function loadNotifications() {
+        try {
+          const items = await window.Sheltr.apiFetch('/api/notifications?unreadOnly=true&limit=10');
+          if (!items.length) {
+            notifsEl.textContent = 'No new notifications.';
+            return;
+          }
+          notifsEl.innerHTML = '<ul>' + items.map(n => (
+            `<li><strong>${n.title}</strong> — ${n.body}</li>`
+          )).join('') + '</ul>';
+        } catch (e) {
+          notifsEl.textContent = 'Login to view notifications.';
+        }
+      }
+
+      markAllBtn.addEventListener('click', async () => {
+        try {
+          await window.Sheltr.apiFetch('/api/notifications/read-all', { method: 'PATCH' });
+          window.Sheltr.toast('Marked all as read');
+          loadNotifications();
+        } catch (e) {
+          window.Sheltr.toast(e.message || 'Failed', 'error');
+        }
+      });
+
+      loadBookings();
+      loadNotifications();
+    })();
+  </script>
+</body>
+

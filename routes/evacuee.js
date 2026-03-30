@@ -21,4 +21,9 @@ router.get('/shelters/:id', async (req, res) => {
   res.render('evacuee/show', { shelter });
 });
 
+// guest bookings page (UI uses JWT via API)
+router.get('/bookings', (req, res) => {
+  res.render('evacuee/bookings');
+});
+
 module.exports = router;

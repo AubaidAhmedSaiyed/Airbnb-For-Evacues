@@ -11,6 +11,11 @@ window.Sheltr.setToken = function setToken(token) {
   else localStorage.setItem('sheltr_token', token);
 };
 
+window.Sheltr.logout = function logout() {
+  window.Sheltr.setToken('');
+  window.location.href = '/';
+};
+
 window.Sheltr.apiFetch = async function apiFetch(path, options = {}) {
   const token = window.Sheltr.getToken();
   const headers = new Headers(options.headers || {});
@@ -40,4 +45,46 @@ window.Sheltr.formToJson = function formToJson(formEl) {
   for (const [k, v] of fd.entries()) obj[k] = v;
   return obj;
 };
+
+window.Sheltr.toast = function toast(message, kind = 'info') {
+  let el = document.getElementById('sheltr-toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'sheltr-toast';
+    el.className = 'toast';
+    document.body.appendChild(el);
+  }
+  el.style.background = kind === 'error' ? '#7d2e2e' : '#0b1b12';
+  el.textContent = message;
+  el.classList.add('show');
+  clearTimeout(window.__sheltrToastT);
+  window.__sheltrToastT = setTimeout(() => el.classList.remove('show'), 2400);
+};
+
+window.Sheltr.applyNavAuthState = async function applyNavAuthState() {
+  const token = window.Sheltr.getToken();
+  const loggedOutEls = document.querySelectorAll('[data-auth="logged-out"]');
+  const loggedInEls = document.querySelectorAll('[data-auth="logged-in"]');
+
+  loggedOutEls.forEach(el => { el.style.display = token ? 'none' : ''; });
+  loggedInEls.forEach(el => { el.style.display = token ? '' : 'none'; });
+
+  const whoEl = document.querySelector('[data-whoami]');
+  if (!whoEl) return;
+
+  if (!token) {
+    whoEl.textContent = 'Not logged in';
+    return;
+  }
+  try {
+    const me = await window.Sheltr.apiFetch('/api/users/me');
+    whoEl.textContent = `${me.name} • ${me.role}`;
+  } catch {
+    whoEl.textContent = 'Session expired';
+  }
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+  window.Sheltr.applyNavAuthState();
+});
 
