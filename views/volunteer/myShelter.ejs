@@ -1,0 +1,20 @@
+<% layout("/layouts/boilerplate") %>
+<body>
+  <div class="container">
+    <h2>My Shelters</h2>
+    <% if (!listings || listings.length === 0) { %>
+      <p>No shelters found.</p>
+    <% } else { %>
+      <ul>
+        <% listings.forEach(listing => { %>
+          <li>
+            <h3><%= listing.title %></h3>
+            <p><strong>Location:</strong> <%= listing.location.address %>, <%= listing.location.country %></p>
+            <p><strong>Capacity:</strong> <%= listing.capacity %></p>
+            <p><strong>Availability:</strong> <%= listing.availableFrom ? listing.availableFrom.toISOString().slice(0,10) : '-' %> to <%= listing.availableUntil ? listing.availableUntil.toISOString().slice(0,10) : '-' %></p>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </div>
+</body>

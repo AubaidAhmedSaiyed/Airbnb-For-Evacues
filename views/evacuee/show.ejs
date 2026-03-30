@@ -1,0 +1,58 @@
+<% layout("/layouts/boilerplate") %>
+<body>
+    <h3>Shelter Details: </h3>
+    <ul>
+        <li><%= shelter.host?.name || "Unknown" %></li>
+        <li><%= shelter.host?.contact || "-" %></li>
+        <li><%= shelter.location.address %></li>
+        <li><%= shelter.location.country %></li>
+        <li><%= shelter.capacity %></li>
+        <li><%= shelter.availableFrom ? shelter.availableFrom.toISOString().slice(0,10) : "-" %></li>
+        <li><%= shelter.availableUntil ? shelter.availableUntil.toISOString().slice(0,10) : "-" %></li>
+        <li><%= shelter.description || "-" %></li>
+    </ul>
+
+    <h3>Request a stay</h3>
+    <form id="booking-form">
+      <input type="hidden" name="listing" value="<%= shelter._id %>" />
+      <label>Start date</label>
+      <input type="date" name="startDate" required />
+      <label>End date</label>
+      <input type="date" name="endDate" required />
+      <label>Guests</label>
+      <input type="number" name="guestsCount" min="1" step="1" required />
+      <label>Message (optional)</label>
+      <input type="text" name="message" />
+      <button type="submit">Send booking request</button>
+    </form>
+    <p id="booking-msg" style="color: darkgreen;"></p>
+    <p id="booking-err" style="color: darkred;"></p>
+
+    <script>
+      (function () {
+        const form = document.getElementById('booking-form');
+        const msg = document.getElementById('booking-msg');
+        const err = document.getElementById('booking-err');
+
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          msg.textContent = '';
+          err.textContent = '';
+
+          try {
+            const payload = window.Sheltr.formToJson(form);
+            payload.guestsCount = Number(payload.guestsCount);
+            const data = await window.Sheltr.apiFetch('/api/bookings', {
+              method: 'POST',
+              body: JSON.stringify(payload)
+            });
+            msg.textContent = `Requested! Status: ${data.status}`;
+            form.reset();
+          } catch (e2) {
+            err.textContent = e2.message || 'Booking failed';
+            if (e2.status === 401) err.textContent = 'Please login first.';
+          }
+        });
+      })();
+    </script>
+</body>

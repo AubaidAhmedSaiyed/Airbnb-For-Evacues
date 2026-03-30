@@ -1,0 +1,144 @@
+body{
+    margin:0;
+    padding:0;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+}
+
+.main{
+    background: linear-gradient(to right, #e5f8e6, rgb(233, 253, 230));
+}
+
+.navbar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2E7D32;
+    padding: 10px 20px;
+    color: white;
+}
+
+.tagline span {
+  font-size: 1.1rem;
+  font-style: italic;
+  color: #e4e9e4;
+  letter-spacing: 0.5px;
+  animation: fadeIn 2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+
+img{
+    border-radius: 30px;
+    
+}
+.navbar .logo{
+    font-size: 25px;
+    padding-left: 10px;
+    margin:0
+}
+.nav-links{
+    display: flex;
+    gap:2.8rem;
+    padding: 1px;
+}
+nav a{
+    text-decoration: none;
+    color: aliceblue;
+    font-weight: 450;
+    font-size:20px;
+}
+nav ul{
+    list-style: none;
+    
+}
+.card-shelter{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content:center;
+}
+
+.card-shelter .card{
+    width: 600px;
+    height: 300px;
+    border:1px solid black;
+    margin: 20px;
+    background-color:rgb(242, 255, 240);
+    border-radius: 10px;
+    box-shadow: 1px 2px 5px 2px green;
+}
+
+.card-body{
+    padding: 20px;
+}
+
+.card-title{
+    font-size: large;
+}
+
+h2{
+    padding: 15px;
+}
+
+.footer{
+    background: linear-gradient(to right, #1b1f1f, #1c2a27);
+    color: white;
+}
+
+.footer-row{
+    display:flex;
+    justify-content: space-between;
+}
+
+.page-footer-1{
+    width: 700px;
+    margin:10px;
+    padding: 20px;
+    text-align: start;
+}
+
+.footer-card p{
+    text-align: start;
+}
+
+.page-footer{
+    width: 400px;
+    padding: 20px;
+    margin: 10px;
+    text-align: center;
+}
+
+.page-footer ul{
+    list-style: none;
+}
+
+.page-footer h4{
+    padding-left: 37px;
+}
+
+.footer p{
+
+    padding: 2px;
+}
+
+.footer a{
+    text-decoration: none;
+     color:rgb(219, 245, 193);
+    padding: 4px;
+}
+.trust-message{
+    text-align: center;
+}
+
+.footer a:hover {
+   text-decoration:underline;
+}
+
+
+.btn{
+    display: flex;
+}

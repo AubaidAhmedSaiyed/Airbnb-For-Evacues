@@ -1,0 +1,42 @@
+<% layout("/layouts/boilerplate") %>
+<body>
+  <h2>Login</h2>
+
+  <form id="login-form">
+    <label>Email</label>
+    <input type="email" name="email" required />
+    <label>Password</label>
+    <input type="password" name="password" required />
+    <button type="submit">Login</button>
+  </form>
+
+  <p id="login-error" style="color: darkred;"></p>
+  <p>No account? <a href="/signup">Signup</a></p>
+
+  <script>
+    (function () {
+      const form = document.getElementById('login-form');
+      const errorEl = document.getElementById('login-error');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorEl.textContent = '';
+
+        try {
+          const payload = window.Sheltr.formToJson(form);
+          const data = await window.Sheltr.apiFetch('/api/auth/login', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+
+          window.Sheltr.setToken(data.token);
+          const role = data.user && data.user.role;
+          if (role === 'host') window.location.href = '/volunteer';
+          else window.location.href = '/evacuee/shelters';
+        } catch (err) {
+          errorEl.textContent = err.message || 'Login failed';
+        }
+      });
+    })();
+  </script>
+</body>

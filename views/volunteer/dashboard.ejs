@@ -1,0 +1,95 @@
+<% layout("/layouts/boilerplate") %>
+<body>
+  <div class="container">
+    <h2>Host Dashboard</h2>
+    <p>
+      <strong>Host:</strong> <%= host?.name || "Unknown" %>
+      (<%= host?.email || "-" %>)
+    </p>
+
+    <p>
+      <a href="/volunteer/new"><button>Create Shelter</button></a>
+      <a href="/volunteer/myShelter"><button>My Shelters</button></a>
+    </p>
+
+    <h3>Notifications</h3>
+    <div id="host-notifications"></div>
+
+    <h3>My Listings</h3>
+    <% if (!listings || listings.length === 0) { %>
+      <p>No listings yet.</p>
+    <% } else { %>
+      <ul>
+        <% listings.forEach(listing => { %>
+          <li>
+            <strong><%= listing.title %></strong>
+            — <%= listing.location.address %>, <%= listing.location.country %>
+            — capacity: <%= listing.capacity %>
+            <a href="/volunteer/myShelter/<%= listing._id %>/edit">Edit</a>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+
+    <h3>Booking Requests</h3>
+    <% if (!bookings || bookings.length === 0) { %>
+      <p>No booking requests yet.</p>
+    <% } else { %>
+      <ul>
+        <% bookings.forEach(b => { %>
+          <li>
+            <strong><%= b.listing?.title || "Listing" %></strong>
+            — <%= b.guest?.name || "Guest" %> (<%= b.guest?.email || "-" %>)
+            — <%= b.startDate ? b.startDate.toISOString().slice(0,10) : "-" %> to <%= b.endDate ? b.endDate.toISOString().slice(0,10) : "-" %>
+            — status: <%= b.status %>
+            <span style="margin-left:10px;">
+              <button class="booking-status" data-id="<%= b._id %>" data-status="approved">Approve</button>
+              <button class="booking-status" data-id="<%= b._id %>" data-status="rejected">Reject</button>
+            </span>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </div>
+
+  <script>
+    (function () {
+      const notifEl = document.getElementById('host-notifications');
+
+      async function loadNotifications() {
+        try {
+          const items = await window.Sheltr.apiFetch('/api/notifications?unreadOnly=true&limit=10');
+          if (!items.length) {
+            notifEl.textContent = 'No new notifications.';
+            return;
+          }
+          notifEl.innerHTML = '<ul>' + items.map(n => (
+            `<li><strong>${n.title}</strong> — ${n.body}</li>`
+          )).join('') + '</ul>';
+        } catch (e) {
+          notifEl.textContent = 'Login to see notifications.';
+        }
+      }
+
+      async function updateBookingStatus(id, status) {
+        await window.Sheltr.apiFetch(`/api/bookings/${id}/status`, {
+          method: 'PATCH',
+          body: JSON.stringify({ status })
+        });
+        window.location.reload();
+      }
+
+      document.querySelectorAll('.booking-status').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          try {
+            await updateBookingStatus(btn.dataset.id, btn.dataset.status);
+          } catch (e) {
+            alert(e.message || 'Failed');
+          }
+        });
+      });
+
+      loadNotifications();
+    })();
+  </script>
+</body>

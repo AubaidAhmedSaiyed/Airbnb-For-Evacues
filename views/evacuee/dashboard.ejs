@@ -1,0 +1,73 @@
+<% layout("/layouts/boilerplate") %>
+<body>
+ 
+   
+            <h2>🛡️ Available Shelters</h2>
+         <div class="card-shelter">
+                      <% for (let shelter of allshelter) { %>
+                <div class="card">
+                    <% const img = (shelter.images && shelter.images.length) ? shelter.images[0] : null; %>
+                    <% if (img) { %>
+                      <img src="<%= img %>" class="card-img-top" alt="Shelter Image">
+                    <% } %>
+                    <div class="card-body">
+                        <h5 class="card-title">Host: <%= shelter.host?.name || "Unknown" %></h5>
+                        <p class="card-text">
+                            Capacity: <%= shelter.capacity %><br>
+                            Location: <%= shelter.location.address %>, <%= shelter.location.country %>
+                        </p>
+                        <p class="text-muted">
+                          Available:
+                          <%= shelter.availableFrom ? shelter.availableFrom.toISOString().slice(0,10) : "-" %>
+                          →
+                          <%= shelter.availableUntil ? shelter.availableUntil.toISOString().slice(0,10) : "-" %>
+                        </p>
+                        <a href="/evacuee/shelters/<%= shelter._id %>"><button>Details</button></a>
+                    </div>
+            </div>
+            <% } %>
+
+            </div>
+         
+    </div>
+   
+    <div class="footer">
+        <div class="footer-row">
+            <div class="page-footer-1">
+                <div class="footer-card">
+                    <h4 style="margin-top: 0;"> About Us</h4>
+                    <p > 🩷 Sheltr is a citizen-led, volunteer-powered platform that connects people displaced by emergencies with safe, temporary places to stay - free of cost and free of judgment.
+    Born from the urgent need to respond quickly in times of crisis, Sheltr was created to bridge compassion with action. Whether it's floods, fires, or other disasters, we believe that help should be fast, accessible, and human.</p>
+                </div>
+            </div>
+            <div class="page-footer">
+                <div class="footer-card">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Disaster Relief Guide</a></li>
+                        <li><a href="#">Safety & Privacy Practices</a></li>
+                        <li><a href="#">Volunteer Handbook</a></li>
+                        <li><a href="#">Disaster Relief Guide</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="page-footer">
+                <div class="footer-card">
+                    <h4>Follow Us</h4>
+                    <ul>
+                        <li><a href="#">Instagram</a></li>
+                        <li><a href="#">Youtube</a></li>
+                        <li><a href="#">Facebook</a></li>
+                        <li><a href="#">TikTok</a></li>
+                    </ul>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="trust-message">
+            <p>© 2025 Sheltr.<a href="#"> Privacy Policy</a></p>
+          <p style="margin-bottom: 0; padding-bottom: 8px;">🌍 Trusted by communities across the nation — powered by kindness.</p>
+        </div>
+    </div>
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+</body>

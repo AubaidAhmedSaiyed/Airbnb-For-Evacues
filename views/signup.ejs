@@ -1,0 +1,55 @@
+<% layout("/layouts/boilerplate") %>
+<body>
+  <h2>Signup</h2>
+
+  <form id="signup-form">
+    <label>Name</label>
+    <input type="text" name="name" required />
+    <label>Email</label>
+    <input type="email" name="email" required />
+    <label>Password</label>
+    <input type="password" name="password" required />
+    <label>Role</label>
+    <select name="role">
+      <option value="guest">Guest</option>
+      <option value="host">Host</option>
+    </select>
+    <label>Contact</label>
+    <input type="text" name="contact" />
+    <button type="submit">Signup</button>
+  </form>
+
+  <p id="signup-error" style="color: darkred;"></p>
+  <p>Already have an account? <a href="/login">Login</a></p>
+
+  <script>
+    (function () {
+      const form = document.getElementById('signup-form');
+      const errorEl = document.getElementById('signup-error');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorEl.textContent = '';
+
+        try {
+          const payload = window.Sheltr.formToJson(form);
+          const data = await window.Sheltr.apiFetch('/api/auth/register', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+
+          window.Sheltr.setToken(data.token);
+          const role = data.user && data.user.role;
+          if (role === 'host') window.location.href = '/volunteer';
+          else window.location.href = '/evacuee/shelters';
+        } catch (err) {
+          if (err.data && err.data.errors && err.data.errors.length) {
+            errorEl.textContent = err.data.errors[0].msg;
+          } else {
+            errorEl.textContent = err.message || 'Signup failed';
+          }
+        }
+      });
+    })();
+  </script>
+</body>

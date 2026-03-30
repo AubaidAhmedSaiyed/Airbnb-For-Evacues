@@ -1,0 +1,30 @@
+<% layout("/layouts/boilerplate") %>
+<body>
+  <h2>🛡️ Available Shelters</h2>
+
+  <div class="card-shelter">
+    <% for (let shelter of allshelter) { %>
+      <div class="card">
+        <% const img = (shelter.images && shelter.images.length) ? shelter.images[0] : null; %>
+        <% if (img) { %>
+          <img src="<%= img %>" class="card-img-top" alt="Shelter Image" />
+        <% } %>
+
+        <div class="card-body">
+          <h5 class="card-title">Host: <%= shelter.host?.name || "Unknown" %></h5>
+          <p class="card-text">
+            Capacity: <%= shelter.capacity %><br />
+            Location: <%= shelter.location.address %>, <%= shelter.location.country %>
+          </p>
+          <p class="text-muted">
+            Available:
+            <%= shelter.availableFrom ? shelter.availableFrom.toISOString().slice(0,10) : "-" %>
+            →
+            <%= shelter.availableUntil ? shelter.availableUntil.toISOString().slice(0,10) : "-" %>
+          </p>
+          <a href="/evacuee/shelters/<%= shelter._id %>"><button>Details</button></a>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</body>
